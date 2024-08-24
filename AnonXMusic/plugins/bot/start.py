@@ -24,7 +24,18 @@ from config import BANNED_USERS
 from strings import get_string
 
 
-@app.on_message(filters.command(["start"]) & filters.private & ~BANNED_USERS)
+@app.on_message(filters.text & ~filters.private, group=7)
+async def stats(c, msg):
+    if msg.chat.type == ChatType.CHANNEL:
+        if not await is_served_channel(msg.chat.id):
+            await add_served_channel(msg.chat.id)
+    else:
+        if not await is_served_chat(msg.chat.id):
+            await add_served_chat(msg.chat.id)
+        
+
+@app.on_message(filters.command(["start"]) & filters.private & ~devs & ~BANNED_USERS)
+@must_join_ch
 @LanguageStart
 async def start_pm(client, message: Message, _):
     await add_served_user(message.from_user.id)
@@ -83,9 +94,15 @@ async def start_pm(client, message: Message, _):
                     text=f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>ᴛʀᴀᴄᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</b>.\n\n<b>ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
                 )
     else:
+        await message.reply("<b>صلي على النبي وتبسم ♥️✨</b>")
+        if client.me.photo:
+            async for photo in app.get_chat_photos("me",limit=1):
+                start_img = photo.file_id
+        else:
+            start_img = config.START_IMG_URL
         out = private_panel(_)
         await message.reply_photo(
-            photo=config.START_IMG_URL,
+            photo=start_img,
             caption=_["start_2"].format(message.from_user.mention, app.mention),
             reply_markup=InlineKeyboardMarkup(out),
         )
