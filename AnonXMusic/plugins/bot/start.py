@@ -9,20 +9,25 @@ import config
 from AnonXMusic import app
 from AnonXMusic.misc import _boot_
 from AnonXMusic.plugins.sudo.sudoers import sudoers_list
+from AnonXMusic.plugins.play.keyboard import devs
 from AnonXMusic.utils.database import (
     add_served_chat,
+    add_served_channel,
+    is_served_channel,
+    is_served_chat,
     add_served_user,
     blacklisted_chats,
     get_lang,
     is_banned_user,
     is_on_off,
 )
+from pyrogram.enums import ChatType
 from AnonXMusic.utils.decorators.language import LanguageStart
+from AnonXMusic.utils.decorators.must_join import must_join_ch
 from AnonXMusic.utils.formatters import get_readable_time
 from AnonXMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
-
 
 @app.on_message(filters.text & ~filters.private, group=7)
 async def stats(c, msg):
